@@ -20,10 +20,7 @@ module.exports = {
         const member = message.guild.member(user)
         const kicker = message.author;
         const moderator = message.guild.member(kicker);
-        async function kick() {
-            // No arguments given, provide usage
-        if ((args.length < 1) && moderator.hasPermission(flags)) {
-            const usage = new MessageEmbed()
+        const usage = new MessageEmbed()
             .setColor('#4ABDF6')
             .setTitle('Kick Command')
             .setAuthor(client.user.tag)
@@ -34,6 +31,9 @@ module.exports = {
 			.addField('Support Server:', '[Join Support Server](https://discord.gg/py87FjA)', true)
 			.setTimestamp()
             .setFooter('Embedded by ' + client.user.username, client.user.displayAvatarURL());
+        async function kick() {
+            // No arguments given, provide usage
+        if ((args.length < 1) && moderator.hasPermission(flags)) {
             message.channel.send({ embed: usage })
         }
             // No permissions, return error.
@@ -41,13 +41,12 @@ module.exports = {
             
             message.channel.send({ embed: forbiddenPerms(client) })
         }
-        if (!member && !args.length >= 1) {
+        if (!member && args.length >= 1) {
             message.channel.send({embed: invalidUser(client)})
         }
 
-
             //Check if user mention and permissions are right.
-        if ((!user || user ) && (moderator.hasPermission(flags)) && client.user.hasPermission(botPowers)) {
+        if ((!user || user ) && (moderator.hasPermission(flags)) && args.length) {
             if(user){
             if ((member.kickable)) {
                 const arguments = message.content.substring(prefix.length + user.length).split(' ').slice(2);
