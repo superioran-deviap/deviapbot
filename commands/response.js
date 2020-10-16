@@ -25,3 +25,17 @@ module.exports.invalidUser = (client) => {
         .addField('Explanation: ', 'Attempting to perform this action failed!\n\n*Reason: Not a valid user.*');
     return userInvalid;
 };
+
+// Information
+module.exports.serverInfo =  (client) => {
+    const deviapInfo = new MessageEmbed()
+        .setColor('#6767ce')
+        .setTitle('About Deviap')
+        .setDescription('Hi there! Welcome to the official Deviap Discord server. In this server, you can engage with other community members and stay up to date on the latest Deviap news.')
+        .addField('Rules', 'In the <#760593027734569050> you can find a list of rules that you must follow in this server. If you don’t follow them then you have to face consequences.')
+        .addField('Bulletin', 'The <#760593042742313000> contains announcements and important updates related to Deviap')
+        .addField('Support', 'Need help? Check out the <#760592899351379998> channel for how to reach us!')
+        .addField('Miscellaneous', 'Please be sure to read channel descriptions for other channels.')
+        .setTimestamp();
+        return deviapInfo;
+}
