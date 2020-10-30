@@ -7,7 +7,6 @@ module.exports.forbiddenPerms = (client) => {
     const noPerms = new MessageEmbed()
         .setColor('#FF4233')
         .setTitle('403: PERMISSION FORBIDDEN')
-        .setImage(message.author.displayAvatarURL())
 		.setAuthor(client.user.tag)
         .setFooter('Embedded by ' + client.user.username, client.user.displayAvatarURL())
         .addField('Explanation: ', 'Critical command usage failure!\n\nReason:' + message.author + ' does not have permission to run this command.')
