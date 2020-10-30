@@ -36,7 +36,10 @@ module.exports.serverInfo =  (client) => {
         .addField('Bulletin', 'The <#760593042742313000> contains announcements and important updates related to Deviap')
         .addField('Support', 'Need help? Check out the <#760592899351379998> channel for how to reach us!')
         .addField('Miscellaneous', 'Please be sure to read channel descriptions for other channels.')
-        .setTimestamp();
+        .addField('\u200b', '\u200b')
+        .addField('**Invite your friends!**', '[Deviap Invite](https://discord.gg/AudGdds)')
+        .setTimestamp()
+        .setFooter(`Embedded by ${client.user.username}`, client.user.displayAvatarURL())
         return deviapInfo;
 }
 
