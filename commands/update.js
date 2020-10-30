@@ -8,7 +8,11 @@ module.exports = {
         const infoChannel = client.channels.cache.get('745281538920546327')
         const supportChannel = client.channels.cache.get('770930852833919007')
         const ruleChannel = client.channels.cache.get('745281654825812128')
-	const member = message.author;
+        let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(x => x.user.username.toLowerCase() === args.slice(0).join(" ") || x.user.username === args[0])
+
+        if(!member) { 
+            member = message.member;
+        }
 	if (member.roles.cache.some(role => role.name === 'Administrator')){
 		if(args.length > 1){
 		    message.delete()
@@ -31,6 +35,6 @@ module.exports = {
 		    ruleChannel.send({embed: serverRules(client)})
 		}
 	} else if (!member.roles.cache.some(role => role.name === 'Administrator'))
-		message.channel.send({embed: forbiddenPerms(client)})
+		message.channel.send({embed: forbiddenPerms(client, message)})
     }
 }
