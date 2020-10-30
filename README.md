@@ -13,7 +13,7 @@ As a warning, this bot uses **Privileged Intents**, meaning it tracks presence a
 
 We have only a few commands at the moment:
 - Ban (ban a target user if you and the bot have permission to do so)
-- Eval (evaluate an argument (must be the bot owner)
+- Eval (evaluate an argument (must be the bot owner))
 - Kick (temporarily remove a member from the server if you and the bot have permission to do so)
 - Ping (check the message and API latency)
 - Update (send one of a few options to a channel, must hold a privileged role)
