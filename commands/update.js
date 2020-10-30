@@ -5,9 +5,9 @@ module.exports = {
     guildOnly: true,
 	execute(client, message, args) {
         const { serverInfo, serverSupport, serverRules }= require('../commands/response.js')
-        const infoChannel = client.channels.cache.get('766712471230611527')
-        const supportChannel = client.channels.cache.get('760592899351379998')
-        const ruleChannel = client.channels.cache.get('760593027734569050')
+        const infoChannel = client.channels.cache.get('745281538920546327')
+        const supportChannel = client.channels.cache.get('770930852833919007')
+        const ruleChannel = client.channels.cache.get('745281654825812128')
         if(args.length > 1){
             message.delete()
             message.reply('Too many arguments!')
@@ -18,8 +18,7 @@ module.exports = {
         }
         else if(args[0] === 'info'){
             message.delete()
-            infoChannel.bulkDelete(3).then(
-            infoChannel.send({embed: serverInfo(client)}))
+            infoChannel.send({embed: serverInfo(client)})
         }
         else if(args[0] === 'support'){
             message.delete()
