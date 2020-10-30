@@ -1,97 +1,106 @@
 module.exports = {
 	name: 'whois',
-    description: 'Who is this person?',
-    aliases: ['w', 'who'],
+	description: 'Who is this person?',
+	aliases: ['who'],
+	usage: '[!whois]',
 	execute(client, message, args) {
-        message.delete();
-        const { MessageEmbed } = require('discord.js')
-        const { modInTraining, staffRole } = require('../config.json')
-		if (!args.length) {
-            const user = message.author;
-            const member = message.guild.member(user);
-            const userInfo = new MessageEmbed()
-                .setColor(member.displayHexColor)
-				.setTitle('User Info')
-                .setAuthor(member.user.tag)
-                .setThumbnail(user.displayAvatarURL())
-				.setDescription('Information about ' + member.toString() + ' can be found in the fields below.')
-				.addField('Your Username', member.toString(), true)
-				.addField('Your User ID', member.id)
-                .addField('Member Data:', 'The following section displays members in various states.')
-				.setTimestamp()
-				.setFooter('Embedded by ' + client.user.username, client.user.displayAvatarURL());
-            // Special recognition
-            if (member.roles.cache.some(role => role.id === staffRole)) {
-                 userInfo.addField('Special Note:', 'This user is a Vulcan Staff Member!') 
-            } else if (member.roles.cache.some(role => role.id === modInTraining)){
-                userInfo.addField('Special Note:', 'This user is a Moderator in Training!') 
-            } 
-            userInfo.addField('Join Date:', member.joinedAt)
-            // client status
-            if (member.presence.clientStatus.web){
-                userInfo.addField('Discord Presence:', '🌐 Web', true )
-            } else if (member.presence.clientStatus.mobile){
-                userInfo.addField('Discord Presence:', '📱 Mobile', true)
-            } else if (member.presence.clientStatus.desktop){
-                userInfo.addField('Discord Presence:', '🖥️ Desktop', true )
-            }
+        // Get Discord Embed
+        const Discord = require('discord.js')
+        // Get User!
+        const user = message.author
+        let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(x => x.user.username.toLowerCase() === args.slice(0).join(" ") || x.user.username === args[0])
 
-            // status
-            if (member.presence.status === 'online'){
-                userInfo.addField('Discord Status:', `🟢 ${member.presence.status}`, true )
-            } else if (member.presence.status === 'idle'){
-                userInfo.addField('Discord Status:', `⏰ ${member.presence.status}`, true )
-            } else if (member.presence.status === 'offline'){
-                userInfo.addField('Discord Status:', `👻 ${member.presence.status}`, true)
-            } else if (member.presence.status === 'dnd'){
-                userInfo.addField('Discord Status:', `🛑 ${member.presence.status}`, true )
-            }
-
-            userInfo.addField(`Roles [${member.roles.cache.size}]`, member.roles.cache.map(role => role.toString()).join(', '))
-            message.channel.send({embed: userInfo});
-        } else if (2 > args.length > 0 ){
-            const user = message.mentions.users.first();
-            const member = message.guild.member(user);
-            const userInfo = new MessageEmbed()
-                .setColor(member.displayHexColor)
-				.setTitle(member.username + ' Info')
-                .setAuthor(`<@!${member.id}>`)
-                .setImage(user.displayAvatarURL({ format: "png", dynamic: true }))
-				.setDescription('Information about ' + member.toString() + ' can be found in the fields below.')
-				.addField('Your Username', member.toString(), true)
-				.addField('Your User ID', member.id)
-                .addField('Member Data:', 'The following section displays members in various states.')
-				.setTimestamp()
-				.setFooter('Embedded by ' + client.user.username, client.user.displayAvatarURL());
-            // Special recognition
-            if (member.roles.cache.some(role => role.id === staffRole)) {
-                 userInfo.addField('Special Note:', 'This user is a Vulcan Staff Member!') 
-            } else if (member.roles.cache.some(role => role.id === modInTraining)){
-                userInfo.addField('Special Note:', 'This user is a Moderator in Training!') 
-            } 
-            
-            // client status
-            if (member.presence.clientStatus.web){
-                userInfo.addField('Discord Presence:', '🌐 Web', true )
-            } else if (member.presence.clientStatus.mobile){
-                userInfo.addField('Discord Presence:', '📱 Mobile', true)
-            } else if (member.presence.clientStatus.desktop){
-                userInfo.addField('Discord Presence:', '🖥️ Desktop', true )
-            }
-
-            // status
-            if (member.presence.status === 'online'){
-                userInfo.addField('Discord Status:', `🟢 ${member.presence.status}`, true )
-            } else if (member.presence.status === 'idle'){
-                userInfo.addField('Discord Status:', `⏰ ${member.presence.status}`, true )
-            } else if (member.presence.status === 'offline'){
-                userInfo.addField('Discord Status:', `👻 ${member.presence.status}`, true)
-            } else if (member.presence.status === 'dnd'){
-                userInfo.addField('Discord Status:', `🛑 ${member.presence.status}`, true )
-            }
-
-            userInfo.addField(`Roles [${member.roles.cache.size}]`, member.roles.cache.map(role => role.toString()).join(', '))
-            message.channel.send({embed: userInfo});
+        if(!member) { 
+            member = message.member;
         }
-	},
-};
+
+        const perms = member.permissions.toArray().map(p => p.split('_').map(v => v.split('').map((c, i) => !i ? c.toUpperCase() : c.toLowerCase()).join('')).join(' ')).reduce((p, c, i, a) => {
+            if (i === 0) return c;
+            if (i === (a.length - 1)) return `${p}, and ${c}`;
+            return `${p}, ${c}`;
+          }, '')
+
+        // Function!
+        async function userInfo(){
+                const info = new Discord.MessageEmbed()
+                .setColor('BLUE')
+                .setTitle('User Information')
+                .setDescription(`Here's all the information I have on ${member.user.username}.`)
+                .setAuthor(member.user.tag)
+                .setThumbnail(member.user.displayAvatarURL())
+                .addField('Username', member.user.username)
+                .addField('Discord ID', member.id)
+                .addField('Join Date', member.joinedAt)
+                .addField('Presence Details', `Information about the user's presence can be found below.`)
+
+                // Status Type
+                if (member.presence.status === 'online'){
+                    info.addField('Discord Status:', `🟢 Online`, true )
+                } else if (member.presence.status === 'idle'){
+                    info.addField('Discord Status:', `⏰ Idle`, true )
+                } else if (member.presence.status === 'offline'){
+                    info.addField('Discord Status:', `👻 Offline`, true)
+                } else if (member.presence.status === 'dnd'){
+                    info.addField('Discord Status:', `🛑 Do Not Disturb`, true )
+                }
+
+                // Client Type
+                if(member.presence.status != "offline"){
+                    if (member.presence.clientStatus.web){
+                    info.addField('Device:', '🌐 Web', true)
+                    } else if (member.presence.clientStatus.mobile){
+                    info.addField('Device:', '📱 Mobile', true)
+                    } else if (member.presence.clientStatus.desktop){
+                    info.addField('Device:', '🖥️ Desktop', true)
+                    }
+                } if (member.presence.status === "offline"){
+                    info.addField('Device:', `*No presence detected*`, true)
+                }
+                info.addField('\u200b', '\u200b', true)
+                // Custom Status Detection
+                let activities
+                if (member.presence.activities.length >= 1){
+                    activities = member.presence.activities[0].name;
+                    info.addField('Activity', activities, true)
+                    if (member.presence.activities[0].type === "CUSTOM_STATUS"){
+                    info.addField('Custom Status', `${member.presence.activities[0].emoji} ${member.presence.activities[0].state}`, true)
+                    }
+                    if (member.presence.activities[0].type === "WATCHING"){
+                        info.addField('Watching', `${member.presence.activities[0].name}`, true)
+                    }
+                    if (member.presence.activities[0].type === "PLAYING"){
+                        info.addField('Playing', `${member.presence.activities[0].name}`, true)
+                    }
+                    if (member.presence.activities[0].type === "STREAMING"){
+                        info.addField('Streaming', `${member.presence.activities[0].name}`, true)
+                    }
+                    if (member.presence.activities[0].type === "LISTENING"){
+                        info.addField('Listening', `${member.presence.activities[0].name}`, true)
+                    }
+                    if (member.presence.activities[0].type === "COMPETING"){
+                        info.addField('Competing', `${member.presence.activities[0].name}`, true)
+                    }
+                    info.addField('\u200b', '\u200b', true)
+                }
+                if (member.presence.activities.length < 1){
+                    activities = 'None';
+                    info.addField('Activity / Status:', activities)
+                }
+                info.addField('\u200b', '\u200b')
+
+                let roleList
+                if(member.roles.cache.size > 8){
+                    roleList = `*Too many to list*`
+                }
+                else if (member.roles.cache.size <= 8){
+                    roleList = member.roles.cache.map(role => role.toString()).join(', ')
+                }
+                info.addField(`Roles [${member.roles.cache.size}]`, roleList )
+                info.addField(`Permissions`, perms)
+                info.setTimestamp()
+                info.setFooter(`Embedded by ${client.user.username}`, client.user.displayAvatarURL())
+                message.channel.send({embed: info})
+            await message.delete()
+        } userInfo();
+    }
+}
